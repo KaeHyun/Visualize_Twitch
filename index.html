@@ -25,7 +25,8 @@
         }
 
         .container {
-            width: 640px;
+            width: 100%;
+            max-width: 8000px;
             background: white;
         }
 
@@ -37,7 +38,7 @@
         <nav class="container navbar navbar-light bg-light">
             <a class="navbar-brand" href="#">
                 <img src="./pngwing.com.png" width="70" height="40" class="d-inline-block align-top" alt="">
-                <span style="font-family: 'Monospace Fonts'; font-size: 24px; font-weight: bold; ">
+                <span style="font-family: 'Consolas'; font-size: 24px; font-weight: bold; ">
                     Surf the Twitch Data
                 </span>
               </a>
@@ -46,14 +47,89 @@
     </head>
 
     <body>
+        <div id="chart"></div>
 
         <script>
             d3.csv("https://raw.githubusercontent.com/KaeHyun/InfoVis/master/twitchdata-update.csv")
             .then(twitchData =>{
                 console.log(twitchData.length);
                 console.log(twitchData[0]);
-                console.log(twitchData["Average Viewers"])
-                })
+                
+                // 데이터 전처리
+                twitchData.forEach(d => {
+                    d.followers = +d.Followers;
+                });
+                // 차트 크기 설정
+                const width = 800;
+                const height = 400;
+                const legendBoxSize = 10; // 인덱스 상자 크기
+                const legendBoxPadding = 5; // 인덱스 상자 간 간격
+                const legendRows = 6; // 인덱스 상자 행 개수
+                const legendColumns = 3; // 인덱스 상자 열 개수
+
+                // SVG 요소 생성
+                const svg = d3.select("#chart")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+                // 언어별 팔로워 수 그룹화
+                const languageData = d3.rollups(twitchData, v => d3.sum(v, d => d.followers), d => d.Language);
+
+                // 팔로워 수를 기준으로 Y 축 스케일 설정
+                const yScale = d3.scaleLinear()
+                .domain([0, d3.max(languageData, d => d[1])])
+                .range([height, 0]);
+
+                // 색상 척도 설정
+                const colorScale = d3.scaleOrdinal(d3.schemePastel1)
+                .domain(languageData.map(d => d[0]));
+
+                 // 막대 그래프 그리기
+                svg.selectAll("rect")
+                .data(languageData)
+                .enter()
+                .append("rect")
+                .attr("x", (d, i) => i * (width / languageData.length))
+                .attr("y", d => yScale(d[1]))
+                .attr("width", width / languageData.length - 1)
+                .attr("height", d => height - yScale(d[1]))
+                .attr("fill", d => colorScale(d[0]));
+                
+                // 언어 레이블 추가
+                svg.selectAll(".language-label")
+                .data(languageData)
+                .enter()
+                .append("text")
+                .attr("class", "language-label")
+                .attr("x", (d, i) => i * (width / languageData.length) + (width / languageData.length - 10) / 2);
+                
+                // 인덱스 상자 그리기
+                const legend = svg.selectAll(".legend")
+                .data(languageData)
+                .enter()
+                .append("g")
+                .attr("class", "legend")
+                .attr("transform", (d, i) => "translate(" + (width - 100 + (i % legendColumns) * 70) + "," + (Math.floor(i / legendColumns) * 30) + ")"); // 인덱스 상자 위치 조정
+
+                legend.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", legendBoxSize)
+                .attr("height", legendBoxSize)
+                .style("fill", d => colorScale(d[0]));
+
+                legend.append("text")
+                .attr("x", legendBoxSize + legendBoxPadding)
+                .attr("y", legendBoxSize + legendBoxPadding)
+                .text(d => d[0]);
+
+
+                // Y 축 그리기
+                const yAxis = d3.axisLeft(yScale);
+                svg.append("g")
+                .call(yAxis);
+
+            });
 
             /* Javascript and d3 here */
             
