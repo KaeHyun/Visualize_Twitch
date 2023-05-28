@@ -1,16 +1,17 @@
 class ScatterPlot{
     
     //SVG 요소 설정
-    margin = { top: 20, right: 20, bottom: 100, left: 37};
+    margin = { top: 30, right: 20, bottom: 100, left: 37};
 
-    constructor(data)
+    constructor(svg, tooltip, data)
     {
+        this.svg = svg;
+        this.tooltip = tooltip;
         this.data = data;
         this.width =650;
         this.height = 460;
         this.x = d3.scaleLinear().range([0, this.width]);
         this.y = d3.scaleLinear().range([this.height, 0]);
-
         this.handler = {};
     }
 
@@ -24,14 +25,15 @@ class ScatterPlot{
         .style("position", "absolute") 
         .append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-
+        
+        this.tooltip = d3.select(this.tooltip);
         this.container = this.svg.append("g");
         this.xAxis = this.svg.append("g").attr("class", "x-axis")
         .attr("transform", `translate(0, ${this.height})`);
         this.yAxis = this.svg.append("g").attr("class", "y-axis");
         
         this.legend = this.svg.append("g");
-
+        
         //x축 update
         this.svg.selectAll(".x-axis")
         .call(d3.axisBottom(this.x))
@@ -74,8 +76,6 @@ class ScatterPlot{
     {
         var filterdata1 = this.data.filter((d) => d.Language === first);
         var filterdata2 = this.data.filter((d) => d.Language === second);
-
-        this.legend.selectAll(".legend-item").remove();
 
         // x축과 y축 설정
         this.xAxisVal = xAxisVal;
@@ -126,7 +126,8 @@ class ScatterPlot{
         .attr("cx", (d) => this.xScale(d[xAxisVal]))
         .attr("cy", (d) => this.yScale(d[yAxisVal]))
         .attr("r", 3)
-        .style("fill", "skyblue");
+        .style("fill", "skyblue")
+        
 
         dots1.exit().remove();
         
@@ -142,13 +143,40 @@ class ScatterPlot{
         .attr("cx", (d) => this.xScale(d[xAxisVal]))
         .attr("cy", (d) => this.yScale(d[yAxisVal]))
         .attr("r", 3)
-        .style("fill", "hotpink");
+        .style("fill", "hotpink")
+
+
         dots2.exit().remove();
+
+        var filterTotal = filterdata1.concat(filterdata2);
+
+        this.circles = this.svg.selectAll("circle")
+        .data(filterTotal)
+        .join("circle")
+        .on("mouseover", (e,d) => {
+            this.tooltip.style("display", "block");
+            this.tooltip.select(".tooltip-inner")
+            .html(`${this.xAxisVal}: ${d[this.xAxisVal]}<br />${this.yAxisVal}: ${d[this.yAxisVal]}`);
+            Popper.createPopper(e.target, this.tooltip.node(), {
+                placement: 'top',
+                modifiers: [
+                    {
+                        name: 'arrow',
+                        options: {
+                            element: this.tooltip.select(".tooltip-arrow").node(),
+                        },
+                    },
+                ],
+            });
+        })
+        .on("mouseout", (d) => {
+            this.tooltip.style("display", "none");
+        });
         
         this.legend
         .style("display", "inline")
         .style("font-size", ".8em")
-        .attr("transform", `translate(${this.width -50}, ${this.height / 2})`)
+        .attr("transform", `translate(${this.width -80}, ${this.height / 2})`)
         .call(d3.legendColor().scale(this.zScale));
  
 
