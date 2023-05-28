@@ -1,17 +1,5 @@
 <!DOCTYPE html>
 
-<!-- 
-    [ 6주차 pdf ]
-    1) d3.select(selectorString)selects the first element that matches selectorString 
-    2) d3.selectAll(selectorString) selects all elements that match selectorString
-    3) selection.attr(name, value) sets the name attribute of the elements in selectionto value.
-    4) selection.style(name, value) sets the name CSS property of the elements in selectionto value.
-    5) selection.text(value) sets the text insidethe elements in selectionto value
-    6) selection.append(tagName)adds a tagNameelement to each element in selection and returns a selection of the added element(s)
-
-
--->
-
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,9 +8,11 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+        
 
         <!-- components 속 js 파일들 -->
         <script src = "components/scatterPlot.js"></script>
+        <script src = "components/groupedBar.js"></script>
 
 
         <title>TWITCH DATA</title>
@@ -37,9 +27,25 @@
             background: white;
         }
 
+        .form-select
+        {
+            background: #7E7E82;
+            border-color: #eee;
+            border-radius: 5%;
+            margin-left: 10px;
+            color: white;
+            height: 40px;
+            width: 220px;
+            box-shadow: inset;
+            text-align: center;
+        }
+
         </style>
 
-        
+    </head>
+
+    <body>
+
         <nav class="container navbar navbar-light bg-light">
             <a class="navbar-brand" href="#">
                 <img src="./pngwing.com.png" width="70" height="40" class="d-inline-block align-top" alt="">
@@ -48,57 +54,111 @@
                 </span>
               </a>
         </nav>
-    </head>
+        <main class="container pb-3">
+        <div class="select">
+          <select class="form-select" id="first-lang" aria-label="Default select example">
+            <option selected>Select First Language</option>
+            <option value="All">All</option>
+            <option value="English">English</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="German">German</option>
+            <option value="Korean">Korean</option>
+            <option value="Russian">Russian</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Czech">Czech</option>
+            <option value="Turkish">Turkish</option>
+            <option value="Polish">Polish</option>
+            <option value="Thai">Thai</option>
+          </select>
 
-    <body>
-        
-        
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin: 10px">
-              Select the Language
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">All</a>
-              <a class="dropdown-item" href="#">English</a>
-              <a class="dropdown-item" href="#">Portuguese</a>
-              <a class="dropdown-item" href="#">German</a>
-              <a class="dropdown-item" href="#">Korean</a>
-              <a class="dropdown-item" href="#">Russian</a>
-              <a class="dropdown-item" href="#">Japanese</a>
-              <a class="dropdown-item" href="#">Czech</a>
-              <a class="dropdown-item" href="#">Turkish</a>
-              <a class="dropdown-item" href="#">Polish</a>  
-              <a class="dropdown-item" href="#">Thai</a>
+          <select class="form-select" id="second-lang" aria-label="Default select example">
+            <option selected>Select Second Language</option>
+            <option value="All">All</option>
+            <option value="English">English</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="German">German</option>
+            <option value="Korean">Korean</option>
+            <option value="Russian">Russian</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Czech">Czech</option>
+            <option value="Turkish">Turkish</option>
+            <option value="Polish">Polish</option>
+            <option value="Thai">Thai</option>
+          </select>
+        </div>
+
+          <div class="row pt-2" style="margin-left: 10px; margin-bottom: 2px;">
+            <div class="col-1 text-end pe-2"><strong>X :</strong></div>
+            <div class="col-11"  style="margin-left: -40px;">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Followers" id="x-sl"
+                        checked>
+                    <label class="form-check-label" for="x-sl">Followers</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Followers gained" id="x-sw">
+                    <label class="form-check-label" for="x-sw">Followers gained</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Peak viewers" id="x-pw">
+                    <label class="form-check-label" for="x-pw">Peak viewers</label>
+                </div>
             </div>
-          </div>
+        </div>
+        <div class="row" style="margin-left: 10px;">
+            <div class="col-1 text-end pe-2"><strong>Y :</strong></div>
+            <div class="col-11" style="margin-left: -40px;">
 
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Average viewers" id="y-pl" checked>
+                    <label class="form-check-label" for="y-pl">Average Viewers</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Watch time(Minutes)" id="y-pw">
+                    <label class="form-check-label" for="y-pw">Watch time(Minutes)</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Peak viewers" id="x-pw">
+                    <label class="form-check-label" for="x-pw">Peak viewers</label>
+                </div>
+            </div>
+        </div>
 
-          <div id="chart"></div>
+        <!-- 산점도 차트 -->
+        <div id="scatterchart"  style="position: relative;"></div>
+    </main>
 
         <script>
-            
+
+            let scatterPlot;
+
+            function updateScatter()
+            {
+                let xAxis= d3.select("input[type=radio][name=x-encoding]:checked").property("value");
+                let yAxis = d3.select("input[type=radio][name=y-encoding]:checked").property("value");
+                let firstLanguage = d3.select("#first-lang").property("value");
+                let secondLanguage = d3.select("#second-lang").property("value");
+                scatterPlot.update(firstLanguage, secondLanguage, xAxis, yAxis);
+            }
 
             d3.csv("https://raw.githubusercontent.com/KaeHyun/InfoVis/master/twitchdata-update.csv")
             .then(twitchData =>{
 
                 //ScatterPlot 객체 생성
-                const scatterPlot = new ScatterPlot(twitchData);
+                scatterPlot = new ScatterPlot(twitchData);
                 
                 //초기화
                 scatterPlot.initialize();
 
-                //Select the Language 드롭다운에 대한 이벤트 리스너 등록
-                d3.selectAll(".dropdown-item")
-                .on("click", function() {
-                    var selectedLang = d3.select(this).text();
-                    d3.select("#dropdownMenuButton").text(selectedLang);
+                updateScatter();
 
-                    //updateChart(selectedLang);
-                    scatterPlot.update(selectedLang);
-                });
+                d3.selectAll("input[type=radio][name=x-encoding]").on("change", updateScatter);
+                d3.selectAll("input[type=radio][name=y-encoding]").on("change", updateScatter);
+                d3.select("#first-lang").on("change", updateScatter);
+                d3.select("#second-lang").on("change", updateScatter);
             
-                // 초기값으로 영어 선택
-            scatterPlot.update("All");
+            // 초기값으로 전체 선택
+            scatterPlot.update("English", "English", "Followers", "Average Viewers");
 
             });
 
