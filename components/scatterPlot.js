@@ -6,7 +6,7 @@ class ScatterPlot{
     constructor(data)
     {
         this.data = data;
-        this.width =600;
+        this.width =650;
         this.height = 460;
         this.x = d3.scaleLinear().range([0, this.width]);
         this.y = d3.scaleLinear().range([this.height, 0]);
@@ -30,6 +30,8 @@ class ScatterPlot{
         .attr("transform", `translate(0, ${this.height})`);
         this.yAxis = this.svg.append("g").attr("class", "y-axis");
         
+        this.legend = this.svg.append("g");
+
         //x축 update
         this.svg.selectAll(".x-axis")
         .call(d3.axisBottom(this.x))
@@ -60,12 +62,11 @@ class ScatterPlot{
         
         this.xScale = d3.scaleLinear().range([0, this.width]);
         this.yScale = d3.scaleLinear().range([this.height, 0]);
+        this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10)
 
-        this.legend = this.svg.append("g");
-
-        this.color = d3.scaleOrdinal(d3.schemeDark2);
-
-        this.svg.attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
+        this.svg
+        .attr("width", this.width + this.margin.left + this.margin.right)
+        .attr("height", this.height + this.margin.top + this.margin.bottom);
     }
 
     //선택된 언어에따라 update
@@ -93,6 +94,7 @@ class ScatterPlot{
             d3.min([d3.min(filterdata1, (d) => d[yAxisVal]), d3.min(filterdata2, (d) => d[yAxisVal])]),
             d3.max([d3.max(filterdata1, (d) => d[yAxisVal]), d3.max(filterdata2, (d) => d[yAxisVal])])
         ]).range([this.height, 0]);
+        this.zScale.domain([first, second]).range(["hotpink", "skyblue"]); 
 
         this.xAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top + this.height})`)
@@ -103,6 +105,12 @@ class ScatterPlot{
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
             .transition()
             .call(d3.axisLeft(this.yScale));
+        
+        this.legend
+        .style("display", "inline")
+        .style("font-size", ".8em")
+        .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
+        .call(d3.legendColor().scale(this.zScale));
 
 
         // 데이터를 기반으로 점 추가
@@ -136,28 +144,13 @@ class ScatterPlot{
         .attr("r", 3)
         .style("fill", "hotpink");
         dots2.exit().remove();
-        const legendItems = this.legend.selectAll(".legend-item")
-        .data([first, second]);
-
-        const legendItemsEnter = legendItems.enter()
-        .append("g")
-        .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0, ${i * 20})`);
-
-        legendItemsEnter.append("circle")
-        .attr("cx", this.width + 20)
-        .attr("cy", 10)
-        .attr("r", 5)
-        .style("fill", (d, i) => i === 0 ? "skyblue" : "hotpink");
-
-        legendItemsEnter.append("text")
-        .attr("x", this.width + 30)
-        .attr("y", 14)
-        .text(d => d);
-
-        legendItemsEnter.merge(legendItems);
-
-        legendItems.exit().remove();
+        
+        this.legend
+        .style("display", "inline")
+        .style("font-size", ".8em")
+        .attr("transform", `translate(${this.width -50}, ${this.height / 2})`)
+        .call(d3.legendColor().scale(this.zScale));
+ 
 
     }
 
