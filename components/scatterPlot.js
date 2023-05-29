@@ -8,7 +8,7 @@ class ScatterPlot{
         this.svg = svg;
         this.tooltip = tooltip;
         this.data = data;
-        this.width =650;
+        this.width =650 ;
         this.height = 460;
         this.x = d3.scaleLinear().range([0, this.width]);
         this.y = d3.scaleLinear().range([this.height, 0]);
@@ -18,6 +18,9 @@ class ScatterPlot{
     //초기화
     initialize(){
 
+
+        this.width = 650 - this.margin.left - this.margin.right;
+        this.height= 460 -this.margin.top - this.margin.bottom; 
         this.svg = d3.select("#scatterchart")
         .append("svg")
         .attr("width", this.width + this.margin.left + this.margin.right)
@@ -27,6 +30,7 @@ class ScatterPlot{
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         
         this.tooltip = d3.select(this.tooltip);
+
         this.container = this.svg.append("g")
     .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.xAxis = this.svg.append("g").attr("class", "x-axis")
@@ -76,6 +80,8 @@ class ScatterPlot{
     //선택된 언어에따라 update
     update(first, second, xAxisVal, yAxisVal)
     {
+        this.width = 650 - this.margin.left - this.margin.right;
+        this.height = 460 - this.margin.top - this.margin.bottom;
         var filterdata1 = this.data.filter((d) => d.Language === first);
         var filterdata2 = this.data.filter((d) => d.Language === second);
         var filterTotal = filterdata1.concat(filterdata2);
@@ -83,9 +89,6 @@ class ScatterPlot{
         // x축과 y축 설정
         this.xAxisVal = xAxisVal;
         this.yAxisVal = yAxisVal;
-
-        // console.log(xAxisVal);
-        // console.log(yAxisVal);
 
         // x축과 y축 도메인 설정
         this.xScale.domain([
@@ -125,7 +128,7 @@ class ScatterPlot{
 
         
         // 데이터를 기반으로 점 추가
-        const dots = this.svg.selectAll(".dot")
+        const dots = this.container.selectAll(".dot")
         .data(filterTotal);
 
         dots.enter()
