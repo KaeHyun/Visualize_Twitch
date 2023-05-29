@@ -27,10 +27,12 @@ class ScatterPlot{
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         
         this.tooltip = d3.select(this.tooltip);
-        this.container = this.svg.append("g");
+        this.container = this.svg.append("g")
+    .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.xAxis = this.svg.append("g").attr("class", "x-axis")
-        .attr("transform", `translate(0, ${this.height})`);
-        this.yAxis = this.svg.append("g").attr("class", "y-axis");
+        .attr("transform", `translate(${-this.width}, ${this.width})`);
+        this.yAxis = this.svg.append("g").attr("class", "y-axis")
+        .attr("transform", `translate(${-this.height}, ${this.height})`);
         
         this.legend = this.svg.append("g");
         
@@ -64,7 +66,7 @@ class ScatterPlot{
         
         this.xScale = d3.scaleLinear().range([0, this.width]);
         this.yScale = d3.scaleLinear().range([this.height, 0]);
-        this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10)
+        this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10);
 
         this.svg
         .attr("width", this.width + this.margin.left + this.margin.right)
@@ -81,19 +83,22 @@ class ScatterPlot{
         this.xAxisVal = xAxisVal;
         this.yAxisVal = yAxisVal;
 
-        console.log(xAxisVal);
-        console.log(yAxisVal);
+        // console.log(xAxisVal);
+        // console.log(yAxisVal);
 
         // x축과 y축 도메인 설정
         this.xScale.domain([
-            d3.min([d3.min(filterdata1, (d) => d[xAxisVal]), d3.min(filterdata2, (d) => d[xAxisVal])]),
-            d3.max([d3.max(filterdata1, (d) => d[xAxisVal]), d3.max(filterdata2, (d) => d[xAxisVal])])
+            d3.min([...filterdata1, ...filterdata2], (d) => d[xAxisVal]),
+            d3.max([...filterdata1, ...filterdata2], (d) => d[xAxisVal])
         ]).range([0, this.width]);
+        
 
         this.yScale.domain([
-            d3.min([d3.min(filterdata1, (d) => d[yAxisVal]), d3.min(filterdata2, (d) => d[yAxisVal])]),
-            d3.max([d3.max(filterdata1, (d) => d[yAxisVal]), d3.max(filterdata2, (d) => d[yAxisVal])])
-        ]).range([this.height, 0]);
+            d3.min([...filterdata1, ...filterdata2], (d) => d[yAxisVal]),
+            d3.max([...filterdata1, ...filterdata2],(d) => d[yAxisVal])
+        ]).range([this.height,0]);
+
+        
         this.zScale.domain([first, second]).range(["hotpink", "skyblue"]); 
 
         this.xAxis
@@ -112,7 +117,12 @@ class ScatterPlot{
         .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
         .call(d3.legendColor().scale(this.zScale));
 
+        // SVG 요소의 크기를 다시 설정합니다.
+        const svgWidth = this.width + this.margin.left + this.margin.right;
+        const svgHeight = this.height + this.margin.top + this.margin.bottom;
+        this.svg.attr("width", svgWidth).attr("height", svgHeight);
 
+        
         // 데이터를 기반으로 점 추가
         const dots1 = this.svg.selectAll(".dot1")
         .data(filterdata1);
