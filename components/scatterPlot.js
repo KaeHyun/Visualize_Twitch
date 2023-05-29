@@ -78,6 +78,7 @@ class ScatterPlot{
     {
         var filterdata1 = this.data.filter((d) => d.Language === first);
         var filterdata2 = this.data.filter((d) => d.Language === second);
+        var filterTotal = filterdata1.concat(filterdata2);
 
         // x축과 y축 설정
         this.xAxisVal = xAxisVal;
@@ -88,14 +89,14 @@ class ScatterPlot{
 
         // x축과 y축 도메인 설정
         this.xScale.domain([
-            d3.min([...filterdata1, ...filterdata2], (d) => d[xAxisVal]),
-            d3.max([...filterdata1, ...filterdata2], (d) => d[xAxisVal])
+            d3.min(filterTotal, (d) => d[xAxisVal]),
+            d3.max(filterTotal, (d) => d[xAxisVal])
         ]).range([0, this.width]);
         
 
         this.yScale.domain([
-            d3.min([...filterdata1, ...filterdata2], (d) => d[yAxisVal]),
-            d3.max([...filterdata1, ...filterdata2],(d) => d[yAxisVal])
+            d3.min(filterTotal, (d) => d[yAxisVal]),
+            d3.max(filterTotal,(d) => d[yAxisVal])
         ]).range([this.height,0]);
 
         
@@ -124,42 +125,23 @@ class ScatterPlot{
 
         
         // 데이터를 기반으로 점 추가
-        const dots1 = this.svg.selectAll(".dot1")
-        .data(filterdata1);
+        const dots = this.svg.selectAll(".dot")
+        .data(filterTotal);
 
-        dots1.enter()
+        dots.enter()
         .append("circle")
-        .attr("class", "dot1")
-        .merge(dots1)
+        .attr("class", "dot")
+        .merge(dots)
         .transition()
         .duration(500)
         .attr("cx", (d) => this.xScale(d[xAxisVal]))
         .attr("cy", (d) => this.yScale(d[yAxisVal]))
         .attr("r", 3)
-        .style("fill", "skyblue")
+        .style("fill", (d) => this.zScale(d.Language));
         
 
-        dots1.exit().remove();
+        dots.exit().remove();
         
-        const dots2 = this.svg.selectAll(".dot2")
-        .data(filterdata2);
-
-        dots2.enter()
-        .append("circle")
-        .attr("class", "dot2")
-        .merge(dots2)
-        .transition()
-        .duration(500)
-        .attr("cx", (d) => this.xScale(d[xAxisVal]))
-        .attr("cy", (d) => this.yScale(d[yAxisVal]))
-        .attr("r", 3)
-        .style("fill", "hotpink")
-
-
-        dots2.exit().remove();
-
-        var filterTotal = filterdata1.concat(filterdata2);
-
         this.circles = this.svg.selectAll("circle")
         .data(filterTotal)
         .join("circle")
