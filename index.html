@@ -13,7 +13,7 @@
 
         <!-- components 속 js 파일들 -->
         <script src = "components/scatterPlot.js"></script>
-        <script src = "components/zoomCircles.js"></script>
+        <script src = "components/histo.js"></script>
 
 
         <title>TWITCH DATA</title>
@@ -153,13 +153,15 @@
                     Some tooltip text!
                 </div>
             </div>
+            <svg width="400" height="400" id="histogram">
+            </svg>
         </div>
         <div id="zoomCircle" ></div>
     </main>
 
         <script>
 
-            let scatterPlot, brushedData, groupbar;
+            let data, scatterPlot, brushedData, histogram;
 
             function updateScatter()
             {
@@ -169,9 +171,9 @@
                 let secondLanguage = d3.select("#second-lang").property("value");
                 scatterPlot.update(firstLanguage, secondLanguage, xAxis, yAxis);
             }
-            function updateGroup()
+            function updateHisto()
             {
-                groupbar.update(brushedData && brushedData.length> 0 ? brushedData : data, "variety");
+                histogram.update(brushedData && brushedData.length> 0 ? brushedData : data, "Language");
             }
 
 
@@ -193,11 +195,16 @@
 
                 scatterPlot.on("brush", (brushedItems) => {
                     brushedData = brushedItems;
-                    updateGroup(); //scatter plot에서 brushed된 data 기반으로 업데이트
+                    //console.log(brushedData);
+                    updateHisto(); //scatter plot에서 brushed된 data 기반으로 업데이트
                 })
             
-            // 초기값으로 전체 선택
-            scatterPlot.update(null, null, "Views gained", "Average viewers");
+                // 초기값으로 전체 선택
+                scatterPlot.update(null, null, "Views gained", "Average viewers");
+
+                histogram = new Histogram("#histogram");
+                histogram.initialize();
+                updateHisto();
 
             });            
         </script>

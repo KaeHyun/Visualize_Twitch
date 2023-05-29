@@ -12,6 +12,7 @@ class ScatterPlot{
         this.height = 460;
         this.x = d3.scaleLinear();
         this.y = d3.scaleLinear();
+        this.filteredData = data;
         this.handlers = {};
     }
 
@@ -99,11 +100,13 @@ class ScatterPlot{
             filterdata1 = this.data.filter((d) => d.Language === first);
             filterdata2 = this.data.filter((d) => d.Language === second);
             filterTotal = filterdata1.concat(filterdata2);
+            this.filteredData = filterTotal;
             
-            console.log(filterTotal);
+            //console.log(filterTotal);
         }
         else{
             filterTotal = this.data;
+            this.filteredData = filterTotal; 
             //console.log(filterTotal);
         }
         //console.log(filterTotal);
@@ -126,7 +129,7 @@ class ScatterPlot{
         const uniqueLanguages = [...new Set(filterTotal.map(d => d.Language))];
         this.zScale.domain(uniqueLanguages).range(d3.schemeSet2); 
         const languageLength = uniqueLanguages.length;
-        console.log(languageLength);
+        //console.log(languageLength);
 
 
         //brush first
@@ -213,7 +216,7 @@ class ScatterPlot{
         return x0 <= x && x <= x1 && y0 <= y && y <= y1;
     }
 
-        // this method will be called each time the brush is updated
+    // this method will be called each time the brush is updated
     brushCircles(event)
     {
         let selection = event.selection;
@@ -221,7 +224,7 @@ class ScatterPlot{
         this.circles.classed("brushed", d => this.isBrushed(d, selection));
     
         if (this.handlers.brush)
-            this.handlers.brush(this.data.filter(d => this.isBrushed(d, selection)));
+            this.handlers.brush(this.filteredData.filter(d => this.isBrushed(d, selection)));
     }
     on(eventType, handle)
     {
