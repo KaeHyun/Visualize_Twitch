@@ -15,6 +15,7 @@
         <script src = "components/scatterPlot.js"></script>
         <script src = "components/histo.js"></script>
         <script src = "components/groupBar.js"></script>
+        <script src = "components/sortBar.js"></script>
         <!-- components 속 js 파일들 -->
 
 
@@ -184,11 +185,22 @@
                     </svg>
                 </div>
         </div>
+        <hr>
+        <text style="font-size: 15px; font-weight: bold;"> Now Let's Explore the Top-N Streamers</text>
+        <select class="form-select form-select-sm" id="select-top"aria-label=".form-select-sm example">
+            <option selected>Select your choice </option>
+            <option value="10">Top-10</option>
+            <option value="50">Top-50</option>
+            <option value="100">Top-100</option>
+          </select>
+        <div class="playground">
+            <svg width="700" height="700" id="sortbarchart"></svg>
+        </div>
     </main>
 
         <script>
 
-            let data, scatterPlot, histogram, groupbar, brushedData;
+            let data, scatterPlot, histogram, groupbar, brushedData, sortBar;
 
             function updateScatter()
             {
@@ -208,6 +220,12 @@
                 groupbar.update(brushedData && brushedData.length> 0 ? brushedData : data, "Language");
             }
 
+            function updateSort()
+            {
+                let topVal = d3.select("#select-top").property("value");
+                sortBar.update(topVal);
+            }
+
             d3.csv("https://raw.githubusercontent.com/KaeHyun/InfoVis/master/twitchdata-update.csv")
             .then(twitchData =>{
 
@@ -218,6 +236,11 @@
                 scatterPlot.initialize();
 
                 updateScatter();
+
+                //bubble 객체 생성
+                sortBar = new SortBar("#bubblechart", twitchData);
+                sortBar.initialize();
+                
 
                 d3.selectAll("input[type=radio][name=x-encoding]").on("change", updateScatter);
                 d3.selectAll("input[type=radio][name=y-encoding]").on("change", updateScatter);
@@ -244,8 +267,12 @@
                 console.log(groupbar);
                 groupbar.initialize();
 
+                updateSort();
+
                 updateHisto();
                 updateGB();
+                
+                
 
             });            
         </script>
