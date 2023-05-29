@@ -2,7 +2,7 @@ class Histogram{
 
     margin = {
         top: 10, right: 10, bottom: 40, left: 40
-    }
+    };
 
     constructor(svg, width = 200, height = 200) {
         this.svg = svg;
@@ -32,8 +32,8 @@ class Histogram{
     }
 
     update(data, xVar){
-        console.log(data)
-        console.log(xVar);
+        // console.log(data)
+        // console.log(xVar);
         const categories = [...new Set(data.map(d => d[xVar]))]
         const counts = {}
 
@@ -62,7 +62,8 @@ class Histogram{
             .attr("text-anchor", "end")
             .attr("dx", "-0.8em")
             .attr("dy", "0.15em")
-            .style("font-size", "8px");
+            .style("font-size", "8px")
+            .style("font-weight", "bold");
 
         this.yAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)

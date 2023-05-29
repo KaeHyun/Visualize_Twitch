@@ -14,6 +14,8 @@
         <!-- components 속 js 파일들 -->
         <script src = "components/scatterPlot.js"></script>
         <script src = "components/histo.js"></script>
+        <script src = "components/groupBar.js"></script>
+        <!-- components 속 js 파일들 -->
 
 
         <title>TWITCH DATA</title>
@@ -28,9 +30,15 @@
             background: white;
         }
         .playground {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        }
+
+        .charts-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+        margin-left: 20px;
         }
 
         .form-select
@@ -53,9 +61,9 @@
             r: 5;
         }
         #histogram {
-         width: 500px;
-        height: 500px;
-}
+            width: 400px;
+            height: 400px;
+        }
 
         </style>
 
@@ -162,14 +170,16 @@
                         Some tooltip text!
                     </div>
                 </div>
-                <svg width="500" height="500" id="histogram"></svg>
+                <div class="charts-container">
+                    <svg width="400" height="400" id="histogram"></svg>
+                    <svg width="400" height="400" id="gb"></svg>
+                </div>
         </div>
-        <div id="zoomCircle" ></div>
     </main>
 
         <script>
 
-            let data, scatterPlot, brushedData, histogram;
+            let data, scatterPlot, histogram, groupbar, brushedData;
 
             function updateScatter()
             {
@@ -183,7 +193,11 @@
             {
                 histogram.update(brushedData && brushedData.length> 0 ? brushedData : data, "Language");
             }
-
+            
+            function updateGB()
+            {
+                groupbar.update(brushedData && brushedData.length> 0 ? brushedData : data, "Language");
+            }
 
             d3.csv("https://raw.githubusercontent.com/KaeHyun/InfoVis/master/twitchdata-update.csv")
             .then(twitchData =>{
@@ -203,16 +217,26 @@
 
                 scatterPlot.on("brush", (brushedItems) => {
                     brushedData = brushedItems;
-                    //console.log(brushedData);
-                    updateHisto(); //scatter plot에서 brushed된 data 기반으로 업데이트
+                    //scatter plot에서 brushed된 data 기반으로 업데이트
+                    updateHisto(); 
+                    updateGB();
+                    
                 })
             
                 // 초기값으로 전체 선택
                 scatterPlot.update(null, null, "Views gained", "Average viewers");
-
+                
+                //histogram 객체 생성
                 histogram = new Histogram("#histogram");
+                console.log(histogram);
                 histogram.initialize();
+                //GB 객체 생성
+                groupbar = new GB("#gb");
+                console.log(groupbar);
+                groupbar.initialize();
+                
                 updateHisto();
+                updateGB();
 
             });            
         </script>
