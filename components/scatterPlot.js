@@ -10,8 +10,8 @@ class ScatterPlot{
         this.data = data;
         this.width =650 ;
         this.height = 460;
-        this.x = d3.scaleLinear().range([0, this.width]);
-        this.y = d3.scaleLinear().range([this.height, 0]);
+        this.x = d3.scaleLinear();
+        this.y = d3.scaleLinear();
         this.handler = {};
     }
 
@@ -32,7 +32,7 @@ class ScatterPlot{
         this.tooltip = d3.select(this.tooltip);
 
         this.container = this.svg.append("g")
-    .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         this.xAxis = this.svg.append("g").attr("class", "x-axis")
         .attr("transform", `translate(${-this.width}, ${this.width})`);
         this.yAxis = this.svg.append("g").attr("class", "y-axis")
@@ -68,8 +68,8 @@ class ScatterPlot{
         .attr("x", 0).attr("y", 10).attr("dy", ".71em")
 
         
-        this.xScale = d3.scaleLinear().range([0, this.width]);
-        this.yScale = d3.scaleLinear().range([this.height, 0]);
+        this.xScale = d3.scaleLinear();
+        this.yScale = d3.scaleLinear();
         this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10);
 
         this.svg
@@ -91,16 +91,13 @@ class ScatterPlot{
         this.yAxisVal = yAxisVal;
 
         // x축과 y축 도메인 설정
-        this.xScale.domain([
-            d3.min(filterTotal, (d) => d[xAxisVal]),
-            d3.max(filterTotal, (d) => d[xAxisVal])
-        ]).range([0, this.width]);
-        
+        this.xScale.domain(d3.extent(filterTotal, (d) => d[xAxisVal])).range([0, this.width]);
+        console.log("xAxisScaling");
+        console.log(d3.extent(filterTotal, (d) => d[xAxisVal]));
 
-        this.yScale.domain([
-            d3.min(filterTotal, (d) => d[yAxisVal]),
-            d3.max(filterTotal,(d) => d[yAxisVal])
-        ]).range([this.height,0]);
+        this.yScale.domain(d3.extent(filterTotal, (d) => d[yAxisVal])).range([this.height, 0]);
+        console.log("yAxis Scaling");
+        console.log(d3.extent(filterTotal, (d) => d[yAxisVal]));
 
         
         this.zScale.domain([first, second]).range(["hotpink", "skyblue"]); 
