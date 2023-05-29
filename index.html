@@ -27,6 +27,11 @@
             max-width: 8000px;
             background: white;
         }
+        .playground {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
         .form-select
         {
@@ -47,6 +52,10 @@
             stroke: gray;
             r: 5;
         }
+        #histogram {
+         width: 500px;
+        height: 500px;
+}
 
         </style>
 
@@ -146,15 +155,14 @@
 
         <!-- 산점도 차트 -->
         <div class="playground">
-            <svg width="700" height="700" id="scatterchart"></svg>
-            <div class="tooltip bs-tooltip-top show" id="sc-tooltip" role="tooltip" style="display:none">
-                <div class="tooltip-arrow"></div>
-                <div class="tooltip-inner">
-                    Some tooltip text!
+                <svg width="700" height="700" id="scatterchart"></svg>
+                <div class="tooltip bs-tooltip-top show" id="sc-tooltip" role="tooltip" style="display:none">
+                    <div class="tooltip-arrow"></div>
+                    <div class="tooltip-inner">
+                        Some tooltip text!
+                    </div>
                 </div>
-            </div>
-            <svg width="400" height="400" id="histogram">
-            </svg>
+                <svg width="500" height="500" id="histogram"></svg>
         </div>
         <div id="zoomCircle" ></div>
     </main>

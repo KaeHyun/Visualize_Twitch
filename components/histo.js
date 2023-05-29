@@ -4,7 +4,7 @@ class Histogram{
         top: 10, right: 10, bottom: 40, left: 40
     }
 
-    constructor(svg, width = 250, height = 250) {
+    constructor(svg, width = 200, height = 200) {
         this.svg = svg;
         this.width = width;
         this.height = height;
@@ -30,7 +30,7 @@ class Histogram{
     }
 
     update(data, xVar){
-        console.log(data);
+        console.log(data)
         console.log(xVar);
         const categories = [...new Set(data.map(d => d[xVar]))]
         const counts = {}
@@ -49,11 +49,18 @@ class Histogram{
             .attr("y", d => this.yScale(counts[d]))
             .attr("width", this.xScale.bandwidth())
             .attr("height", d => this.height - this.yScale(counts[d]))
-            .attr("fill", "lightgray")
+            .attr("fill", (d, i) => d3.schemeDark2[i % 10]);
+
 
         this.xAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-            .call(d3.axisBottom(this.xScale));
+            .call(d3.axisBottom(this.xScale))
+            .selectAll("text")
+            .attr("transform", "rotate(-45)")
+            .attr("text-anchor", "end")
+            .attr("dx", "-0.8em")
+            .attr("dy", "0.15em")
+            .style("font-size", "8px");
 
         this.yAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)

@@ -138,7 +138,13 @@ class ScatterPlot{
         this.xAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top + this.height})`)
             .transition()
-            .call(d3.axisBottom(this.xScale));
+            .call(d3.axisBottom(this.xScale))
+            .selectAll("text")
+            .attr("transform", "rotate(-45)")
+            .attr("text-anchor", "end")
+            .attr("dx", "-0.8em")
+            .attr("dy", "0.15em")
+            .style("font-size", "8px");
 
         this.yAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
