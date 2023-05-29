@@ -8,7 +8,7 @@ class ScatterPlot{
         this.svg = svg;
         this.tooltip = tooltip;
         this.data = data;
-        this.width =650 ;
+        this.width =700 ;
         this.height = 460;
         this.x = d3.scaleLinear();
         this.y = d3.scaleLinear();
@@ -17,15 +17,12 @@ class ScatterPlot{
 
     //초기화
     initialize(){
-
-
-        this.width = 650 - this.margin.left - this.margin.right;
+        this.width = 700 - this.margin.left - this.margin.right;
         this.height= 460 -this.margin.top - this.margin.bottom; 
         this.svg = d3.select("#scatterchart")
         .append("svg")
         .attr("width", this.width + this.margin.left + this.margin.right)
         .attr("height", this.height + this.margin.top + this.margin.bottom)
-        .style("position", "absolute") 
         .append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         
@@ -168,7 +165,7 @@ class ScatterPlot{
         this.legend
         .style("display", "inline")
         .style("font-size", ".8em")
-        .attr("transform", `translate(${this.width -80}, ${this.height / 2})`)
+        .attr("transform", `translate(${this.width -60}, ${this.height / 2})`)
         .call(d3.legendColor().scale(this.zScale));
  
 
