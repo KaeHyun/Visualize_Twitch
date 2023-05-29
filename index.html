@@ -195,12 +195,18 @@
             <option value="100">Top-100</option>
           </select>
 
-          <div class="form-check form-switch">
+          <div class="form-check form-switch" style="margin-bottom: 15px;">
             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
             <label class="form-check-label" id="partner"for="flexSwitchCheckDefault">Show Partnered</label>
           </div>
         
         <div class="playground">
+            <div class="tooltip bs-tooltip-top show" id="sc-tooltip2" role="tooltip" style="display:none">
+                <div class="tooltip-arrow"></div>
+                <div class="tooltip-inner">
+                    Some tooltip text!
+                </div>
+            </div>
             <svg width="700" height="700" id="sortbarchart"></svg>
         </div>
     </main>
@@ -247,7 +253,7 @@
                 updateScatter();
 
                 //bubble 객체 생성
-                sortBar = new SortBar("#bubblechart", twitchData);
+                sortBar = new SortBar("#sortbarchart","#sc-tooltip2", twitchData);
                 sortBar.initialize();
                 
 
@@ -279,6 +285,7 @@
                 updateSort();
                 d3.select("#select-top").on("change", updateSort);
                 d3.select("#flexSwitchCheckDefault").on("change", updateSort);
+                
 
 
                 updateHisto();

@@ -2,11 +2,12 @@ class SortBar {
     //SVG 요소 설정
     margin = { top: 10, right: 10, bottom: 40, left: 40 };
   
-    constructor(svg, data) {
+    constructor(svg, tooltip, data) {
       this.svg = svg;
       this.data = data;
       this.width = 700;
       this.height = 700;
+      this.tooltip = tooltip;
     }
   
     initialize() {
@@ -18,6 +19,8 @@ class SortBar {
   
       this.yScale = d3.scaleBand();
       this.xScale = d3.scaleLinear();
+
+      this.tooltip = d3.select(this.tooltip);
   
       this.svg
         .attr("width", this.width + this.margin.left + this.margin.right)
@@ -27,6 +30,36 @@ class SortBar {
         "transform",
         `translate(${this.margin.left}, ${this.margin.top})`
       );
+
+      // 범례 생성
+    const legendData = [
+        { label: "Partnered", color: "#D8CEF6" },
+        { label: "Not Partnered", color: "pink" }
+      ];
+    
+    const legendGroup = this.legend
+      .selectAll(".legend")
+      .data(legendData)
+      .enter()
+      .append("g")
+      .attr("class", "legend")
+      .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+    
+    legendGroup
+      .append("rect")
+      .attr("x", this.width-70)
+      .attr("y", this.height-5)
+      .attr("width", 15)
+      .attr("height", 15)
+      .attr("fill", (d) => d.color);
+
+    legendGroup
+      .append("text")
+      .attr("x", this.width+50)
+      .attr("y", this.height)
+      .attr("dy", ".35em")
+      .attr("text-anchor", "end")
+      .text((d) => d.label);
     }
   
     update(topVal, checked) {
@@ -51,10 +84,14 @@ class SortBar {
   
       this.xAxis
         .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
+        .transition() // 트랜지션 시작
+        .duration(500) // 애니메이션 지속 시간 설정
         .call(d3.axisBottom(this.xScale));
   
       this.yAxis
         .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
+        .transition() // 트랜지션 시작
+        .duration(500) // 애니메이션 지속 시간 설정
         .call(d3.axisLeft(this.yScale))
         .selectAll("text")
         .attr("transform", "rotate(-60)")
@@ -86,7 +123,33 @@ class SortBar {
         .attr("y", 0)
         .attr("width", (d) => this.xScale(d["Average viewers"]))
         .attr("height", this.yScale.bandwidth() / 2)
-        .attr("fill", "pink");
+        .transition() // 트랜지션 시작
+        .duration(500) // 애니메이션 지속 시간 설정
+        .attr("fill", (d) => (checked && d.Partnered === "True" ? "#D8CEF6" : "pink"));
+    
+        this.bars = this.svg.selectAll("rect.avg.views")
+        .data(slicedData)
+        .join("circle")
+        .on("mouseover", (e,d) => {
+            this.tooltip.style("display", "block");
+            this.tooltip.select(".tooltip-inner")
+            .html(`Channel: ${d.Channel}<br /> Average Viewers: ${d["Average viewers"]}`);
+            Popper.createPopper(e.target, this.tooltip.node(), {
+                placement: 'top',
+                modifiers: [
+                    {
+                        name: 'arrow',
+                        options: {
+                            element: this.tooltip.select(".tooltip-arrow").node(),
+                        },
+                    },
+                ],
+            });
+        })
+        .on("mouseout", (d) => {
+            this.tooltip.style("display", "none");
+        }); 
+    
     }
   }
   
