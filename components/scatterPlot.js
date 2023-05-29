@@ -29,7 +29,10 @@ class ScatterPlot{
         this.tooltip = d3.select(this.tooltip);
 
         this.container = this.svg.append("g")
+        .attr("width", this.width + this.margin.left + this.margin.right)
+        .attr("height", this.height + this.margin.top + this.margin.bottom)
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+
         this.xAxis = this.svg.append("g").attr("class", "x-axis")
         .attr("transform", `translate(${-this.width}, ${this.width})`);
         this.yAxis = this.svg.append("g").attr("class", "y-axis")
@@ -82,19 +85,32 @@ class ScatterPlot{
         var filterdata1 = this.data.filter((d) => d.Language === first);
         var filterdata2 = this.data.filter((d) => d.Language === second);
         var filterTotal = filterdata1.concat(filterdata2);
+        console.log(filterTotal);
 
         // x축과 y축 설정
         this.xAxisVal = xAxisVal;
         this.yAxisVal = yAxisVal;
 
         // x축과 y축 도메인 설정
-        this.xScale.domain(d3.extent(filterTotal, (d) => d[xAxisVal])).range([0, this.width]);
-        console.log("xAxisScaling");
-        console.log(d3.extent(filterTotal, (d) => d[xAxisVal]));
+        this.xScale.domain([
+            d3.min(filterTotal, (d) => parseInt(d[xAxisVal])),
+            d3.max(filterTotal, (d) => parseInt(d[xAxisVal]))
+        ]).range([0, this.width]);
 
-        this.yScale.domain(d3.extent(filterTotal, (d) => d[yAxisVal])).range([this.height, 0]);
+        console.log("xAxisScaling");
+        console.log([
+            d3.max(filterTotal, (d) => parseInt(d[xAxisVal])),
+            d3.min(filterTotal, (d) => parseInt(d[xAxisVal]))
+        ]);
+
+        this.yScale.domain([
+            d3.min(filterTotal, (d) => parseInt(d[yAxisVal])),
+            d3.max(filterTotal,(d) => parseInt(d[yAxisVal]))
+        ]).range([this.height,0]);
         console.log("yAxis Scaling");
-        console.log(d3.extent(filterTotal, (d) => d[yAxisVal]));
+        console.log([d3.min(filterTotal, (d) => d[yAxisVal]),
+        d3.max(filterTotal,(d) => d[yAxisVal])
+    ]);
 
         
         this.zScale.domain([first, second]).range(["hotpink", "skyblue"]); 
