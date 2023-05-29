@@ -62,6 +62,11 @@
         }
         #histogram {
             width: 400px;
+            height: 300px;
+        }
+        #gb
+        {
+            width: 400px;
             height: 400px;
         }
 
@@ -231,10 +236,10 @@
                 console.log(histogram);
                 histogram.initialize();
                 //GB 객체 생성
-                groupbar = new GB("#gb");
+                groupbar = new GB("#gb", "#sc-tooltip");
                 console.log(groupbar);
                 groupbar.initialize();
-                
+
                 updateHisto();
                 updateGB();
 
