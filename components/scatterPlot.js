@@ -12,7 +12,7 @@ class ScatterPlot{
         this.height = 460;
         this.x = d3.scaleLinear();
         this.y = d3.scaleLinear();
-        this.handler = {};
+        this.handlers = {};
     }
 
     //초기화
@@ -20,7 +20,8 @@ class ScatterPlot{
     {
 
         this.width = 700 - this.margin.left - this.margin.right;
-        this.height= 460 -this.margin.top - this.margin.bottom; 
+        this.height= 460 -this.margin.top - this.margin.bottom;
+
         this.svg = d3.select("#scatterchart")
         .append("svg")
         .attr("width", this.width + this.margin.left + this.margin.right)
@@ -40,7 +41,8 @@ class ScatterPlot{
         this.yAxis = this.svg.append("g").attr("class", "y-axis")
         .attr("transform", `translate(${-this.height}, ${this.height})`);
         
-        this.legend = this.svg.append("g");
+        this.legend = this.svg.append("g")
+        .style("display", "none"); 
         
         //x축 update
         this.svg.selectAll(".x-axis")
@@ -72,7 +74,7 @@ class ScatterPlot{
         
         this.xScale = d3.scaleLinear();
         this.yScale = d3.scaleLinear();
-        this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10);
+        this.zScale = d3.scaleOrdinal().range(d3.schemePastel1);
 
         this.svg
         .attr("width", this.width + this.margin.left + this.margin.right)
@@ -90,9 +92,20 @@ class ScatterPlot{
     {
         this.width = 650 - this.margin.left - this.margin.right;
         this.height = 460 - this.margin.top - this.margin.bottom;
-        var filterdata1 = this.data.filter((d) => d.Language === first);
-        var filterdata2 = this.data.filter((d) => d.Language === second);
-        var filterTotal = filterdata1.concat(filterdata2);
+        let filterdata1, filterdata2, filterTotal;
+
+        if(first && second)
+        {
+            filterdata1 = this.data.filter((d) => d.Language === first);
+            filterdata2 = this.data.filter((d) => d.Language === second);
+            filterTotal = filterdata1.concat(filterdata2);
+            
+            console.log(filterTotal);
+        }
+        else{
+            filterTotal = this.data;
+            //console.log(filterTotal);
+        }
         //console.log(filterTotal);
 
         // x축과 y축 설정
@@ -110,7 +123,11 @@ class ScatterPlot{
             d3.max(filterTotal,(d) => parseInt(d[yAxisVal]))
         ]).range([this.height,0]);
 
-        this.zScale.domain([first, second]).range(["hotpink", "skyblue"]); 
+        const uniqueLanguages = [...new Set(filterTotal.map(d => d.Language))];
+        this.zScale.domain(uniqueLanguages).range(d3.schemeSet2); 
+        const languageLength = uniqueLanguages.length;
+        console.log(languageLength);
+
 
         //brush first
         this.container.call(this.brush);
@@ -125,11 +142,19 @@ class ScatterPlot{
             .transition()
             .call(d3.axisLeft(this.yScale));
         
-        this.legend
-        .style("display", "inline")
-        .style("font-size", ".8em")
-        .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
-        .call(d3.legendColor().scale(this.zScale));
+        if ((languageLength > 0) && (languageLength < 4))  
+        {
+            this.legend
+            .style("display", "inline")
+            .style("font-size", ".8em")
+            .attr("transform", `translate(${this.width -60}, ${this.height / 2})`)
+            .call(d3.legendColor().scale(this.zScale));
+    
+        }
+        else
+        {
+            this.legend.style("display", "none");
+        }
 
         // SVG 요소의 크기를 다시 설정합니다.
         const svgWidth = this.width + this.margin.left + this.margin.right;
@@ -153,12 +178,6 @@ class ScatterPlot{
         .style("fill", (d) => this.zScale(d.Language));
         
         dots.exit().remove();
-
-        this.legend
-        .style("display", "inline")
-        .style("font-size", ".8em")
-        .attr("transform", `translate(${this.width -60}, ${this.height / 2})`)
-        .call(d3.legendColor().scale(this.zScale));
 
         this.circles = this.svg.selectAll("circle")
         .data(filterTotal)

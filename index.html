@@ -66,7 +66,6 @@
         <div class="select">
           <select class="form-select" id="first-lang" aria-label="Default select example">
             <option selected>Select First Language</option>
-            <option value="All">All</option>
             <option value="English">English</option>
             <option value="Portuguese">Portuguese</option>
             <option value="German">German</option>
@@ -81,7 +80,6 @@
 
           <select class="form-select" id="second-lang" aria-label="Default select example">
             <option selected>Select Second Language</option>
-            <option value="All">All</option>
             <option value="English">English</option>
             <option value="Portuguese">Portuguese</option>
             <option value="German">German</option>
@@ -124,7 +122,7 @@
             <div class="col-1 text-end pe-2"><strong>Y :</strong></div>
             <div class="col-11" style="margin-left: -40px;">
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="y-encoding" value="Followers gained" id="y-sw" checked>
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Followers gained" id="y-sw" >
                     <label class="form-check-label" for="y-sw">Followers gained</label>
                 </div>
                 <div class="form-check form-check-inline">
@@ -132,7 +130,7 @@
                     <label class="form-check-label" for="y-pw">Followers</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="y-encoding" value="Average viewers" id="y-pw">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Average viewers" id="y-pw" checked>
                     <label class="form-check-label" for="y-pw">Average viewers</label>
                 </div>
                 <div class="form-check form-check-inline">
@@ -199,12 +197,9 @@
                 })
             
             // 초기값으로 전체 선택
-            scatterPlot.update("English", "English", "Views gained", "Views gained");
+            scatterPlot.update(null, null, "Views gained", "Average viewers");
 
-            });
-
-            /* Javascript and d3 here */
-            
+            });            
         </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
