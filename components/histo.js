@@ -25,6 +25,8 @@ class Histogram{
             .attr("height", this.height + this.margin.top + this.margin.bottom);
 
         this.container.attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
+        //초기화면 보여주기
+        this.update([], '');
 
 
     }
