@@ -16,7 +16,9 @@ class ScatterPlot{
     }
 
     //초기화
-    initialize(){
+    initialize()
+    {
+
         this.width = 700 - this.margin.left - this.margin.right;
         this.height= 460 -this.margin.top - this.margin.bottom; 
         this.svg = d3.select("#scatterchart")
@@ -75,6 +77,12 @@ class ScatterPlot{
         this.svg
         .attr("width", this.width + this.margin.left + this.margin.right)
         .attr("height", this.height + this.margin.top + this.margin.bottom);
+
+        this.brush = d3.brush()
+        .extent([[0, 0], [this.width, this.height]])
+        .on("start brush", (event) => {
+            this.brushCircles(event);
+        })
     }
 
     //선택된 언어에따라 update
@@ -85,7 +93,7 @@ class ScatterPlot{
         var filterdata1 = this.data.filter((d) => d.Language === first);
         var filterdata2 = this.data.filter((d) => d.Language === second);
         var filterTotal = filterdata1.concat(filterdata2);
-        console.log(filterTotal);
+        //console.log(filterTotal);
 
         // x축과 y축 설정
         this.xAxisVal = xAxisVal;
@@ -97,23 +105,15 @@ class ScatterPlot{
             d3.max(filterTotal, (d) => parseInt(d[xAxisVal]))
         ]).range([0, this.width]);
 
-        console.log("xAxisScaling");
-        console.log([
-            d3.max(filterTotal, (d) => parseInt(d[xAxisVal])),
-            d3.min(filterTotal, (d) => parseInt(d[xAxisVal]))
-        ]);
-
         this.yScale.domain([
             d3.min(filterTotal, (d) => parseInt(d[yAxisVal])),
             d3.max(filterTotal,(d) => parseInt(d[yAxisVal]))
         ]).range([this.height,0]);
-        console.log("yAxis Scaling");
-        console.log([d3.min(filterTotal, (d) => d[yAxisVal]),
-        d3.max(filterTotal,(d) => d[yAxisVal])
-    ]);
 
-        
         this.zScale.domain([first, second]).range(["hotpink", "skyblue"]); 
+
+        //brush first
+        this.container.call(this.brush);
 
         this.xAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top + this.height})`)
@@ -152,9 +152,14 @@ class ScatterPlot{
         .attr("r", 3)
         .style("fill", (d) => this.zScale(d.Language));
         
-
         dots.exit().remove();
-        
+
+        this.legend
+        .style("display", "inline")
+        .style("font-size", ".8em")
+        .attr("transform", `translate(${this.width -60}, ${this.height / 2})`)
+        .call(d3.legendColor().scale(this.zScale));
+
         this.circles = this.svg.selectAll("circle")
         .data(filterTotal)
         .join("circle")
@@ -178,13 +183,30 @@ class ScatterPlot{
             this.tooltip.style("display", "none");
         });
         
-        this.legend
-        .style("display", "inline")
-        .style("font-size", ".8em")
-        .attr("transform", `translate(${this.width -60}, ${this.height / 2})`)
-        .call(d3.legendColor().scale(this.zScale));
- 
+    }
 
+    isBrushed(d, selection)
+    {
+        let [[x0, y0], [x1, y1]] = selection; // destructuring assignment
+        let x = this.xScale(d[this.xAxisVal]);
+        let y = this.yScale(d[this.yAxisVal]);
+
+        return x0 <= x && x <= x1 && y0 <= y && y <= y1;
+    }
+
+        // this method will be called each time the brush is updated
+    brushCircles(event)
+    {
+        let selection = event.selection;
+
+        this.circles.classed("brushed", d => this.isBrushed(d, selection));
+    
+        if (this.handlers.brush)
+            this.handlers.brush(this.data.filter(d => this.isBrushed(d, selection)));
+    }
+    on(eventType, handle)
+    {
+        this.handlers[eventType] = handle;
     }
 
 }

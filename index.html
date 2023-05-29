@@ -40,6 +40,13 @@
             box-shadow: inset;
             text-align: center;
         }
+        
+        /* In the <style> tag in index.html */
+        .brushed {
+            stroke-width: 1;
+            stroke: gray;
+            r: 5;
+        }
 
         </style>
 
@@ -154,7 +161,7 @@
 
         <script>
 
-            let scatterPlot;
+            let scatterPlot, brushedData, groupbar;
 
             function updateScatter()
             {
@@ -163,6 +170,10 @@
                 let firstLanguage = d3.select("#first-lang").property("value");
                 let secondLanguage = d3.select("#second-lang").property("value");
                 scatterPlot.update(firstLanguage, secondLanguage, xAxis, yAxis);
+            }
+            function updateGroup()
+            {
+                groupbar.update(brushedData && brushedData.length> 0 ? brushedData : data, "variety");
             }
 
 
@@ -181,6 +192,11 @@
                 d3.selectAll("input[type=radio][name=y-encoding]").on("change", updateScatter);
                 d3.select("#first-lang").on("change", updateScatter);
                 d3.select("#second-lang").on("change", updateScatter);
+
+                scatterPlot.on("brush", (brushedItems) => {
+                    brushedData = brushedItems;
+                    updateGroup(); //scatter plot에서 brushed된 data 기반으로 업데이트
+                })
             
             // 초기값으로 전체 선택
             scatterPlot.update("English", "English", "Views gained", "Views gained");
@@ -190,7 +206,9 @@
             /* Javascript and d3 here */
             
         </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
     </body>
 
 </html>
