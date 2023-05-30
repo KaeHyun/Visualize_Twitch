@@ -131,7 +131,7 @@ class GB
         .on("mouseover", (e,d) => {
             this.tooltip.style("display", "block");
             this.tooltip.select(".tooltip-inner")
-            .html(`Channel: ${d["Channel"]} <br/> Watch Time: ${d["Watch time(Minutes)"]}<br /> Stream Time: ${d["Stream time(minutes)"]}`);
+            .html(`Channel: ${d["Channel"]} <br/> Watch Time(Days): ${d["Watch time(Minutes)"]}<br /> Stream Time(Hours): ${d["Stream time(minutes)"]}`);
             Popper.createPopper(e.target, this.tooltip.node(), {
                 placement: 'top',
                 modifiers: [
