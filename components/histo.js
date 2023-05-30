@@ -4,10 +4,11 @@ class Histogram{
         top: 10, right: 10, bottom: 40, left: 40
     };
 
-    constructor(svg) {
+    constructor(svg, tooltip) {
         this.svg = svg;
         this.width = 200;
         this.height = 200;
+        this.tooltip = tooltip;
     }
 
     initialize(){
@@ -19,6 +20,8 @@ class Histogram{
 
         this.xScale = d3.scaleBand();
         this.yScale = d3.scaleLinear();
+
+        this.tooltip = d3.select(this.tooltip);
 
         this.svg
             .attr("width", this.width + this.margin.left + this.margin.right)
@@ -32,7 +35,7 @@ class Histogram{
     }
 
     update(data, xVar){
-        // console.log(data)
+
         // console.log(xVar);
         const categories = [...new Set(data.map(d => d[xVar]))]
         const counts = {}
@@ -68,6 +71,29 @@ class Histogram{
         this.yAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
             .call(d3.axisLeft(this.yScale));
+
+        this.circles = this.svg.selectAll("rect")
+            .data(data)
+            .join("rect")
+            .on("mouseover", (e,d) => {
+                this.tooltip.style("display", "block");
+                this.tooltip.select(".tooltip-inner")
+                .html(`Language: ${d.Language} <br/> Counts: ${counts[String(d.Language)]}`);
+                Popper.createPopper(e.target, this.tooltip.node(), {
+                    placement: 'top',
+                    modifiers: [
+                        {
+                            name: 'arrow',
+                            options: {
+                                element: this.tooltip.select(".tooltip-arrow").node(),
+                            },
+                        },
+                    ],
+                });
+            })
+            .on("mouseout", (d) => {
+                this.tooltip.style("display", "none");
+            });
 
     }
 

@@ -71,6 +71,21 @@
             width: 400px;
             height: 400px;
         }
+        .container-table {
+            border: 1px;
+            padding: 10px;
+        }
+  
+        .row {
+            display: flex;
+        }
+
+        .col {
+            flex: 1;
+        padding: 10px;
+        border: 1px solid #04B4AE;
+    }
+
 
         </style>
 
@@ -87,6 +102,50 @@
               </a>
         </nav>
         <main class="container pb-3">
+            <div class="alert alert-info" role="alert" style="width:1000px;">
+                <p style="font-family: 'Consolas';font-weight: bold; text-align: center; font-size: 20px;">Data Abstraction</p>
+                <p style="font-size: 13px;"> 게임은 현재 매우 큰 산업 시장입니다. 특히, "트위치"라는 플랫폼을 통해 다양한 게임을 컨텐츠로 방송을하는 스트리머들이 등장했습니다. 이에따라, 게임 방송을 시청하는 시청자들이 증가하고 "트위치"의 스트리머로 유입하는 사람들이 상당히 증가했습니다. 따라서, 현재 제공하는 데이터는 2020년 기준 트위치의 스트리머 상위 1000명에대한 데이터입니다. <br>
+                아래 표는 데이터의 column들을 표시한 표입니다.</p>
+                <div class="container-table">
+                    <div class="row" style="font-size: 12px; font-weight:bold;">
+                    <div class="col">
+                          Channels
+                        </div>
+                        <div class="col">
+                          Watch Time (Days)
+                        </div>
+                        <div class="col">
+                          Stream Time (Hours)
+                        </div><div class="col">
+                            Peak viewers
+                          </div>
+                          <div class="col">
+                            Average viewers
+                          </div>
+                          <div class="col">
+                            Followers
+                          </div>
+                        <div class="col">
+                            Followers Gained
+                          </div>
+                          <div class="col">
+                            Views Gained
+                          </div>
+                          <div class="col">
+                            Partnered
+                          </div>
+                          <div class="col">
+                            Mature
+                          </div>
+                          <div class="col">
+                            Language
+                          </div>
+                    </div>
+                </div>
+                <p style="font-size: 13px;">
+                    기본적으로 그래프에 마우스를 hover하면, 각 데이터의 값을 확인할 수 있습니다. 또한, 아래의 산점도 그래프에서는 원하는 데이터를 마우스로 드래그하면 선택한 데이터에대한 히스토그램과 그룹 막대 그래프가 형성됩니다.
+                </p>
+              </div>
         <div class="select">
           <select class="form-select" id="first-lang" aria-label="Default select example">
             <option selected>Select First Language</option>
@@ -207,7 +266,9 @@
                     Some tooltip text!
                 </div>
             </div>
-            <svg width="700" height="700" id="sortbarchart"></svg>
+            <svg width="700" height="700" id="sortbarchart">
+                <text class="graphTitle" x="400" y="730" text-anchor="middle" font-size="14px" style="font-weight:bold;">Top-n Streamers Based on Average Views</text>
+            </svg>
         </div>
     </main>
 
@@ -274,7 +335,7 @@
                 scatterPlot.update(null, null, "Views gained", "Average viewers");
                 
                 //histogram 객체 생성
-                histogram = new Histogram("#histogram");
+                histogram = new Histogram("#histogram", "#sc-tooltip");
                 console.log(histogram);
                 histogram.initialize();
                 //GB 객체 생성
